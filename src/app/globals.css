@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * ============================================================
+ * TERRIBLE TURTLE STUDIO — Color Schema
+ * "Move Slow & Bite Things"
+ * ============================================================
+ *
+ * Brand colors extracted from the logo:
+ *
+ *   Dark Navy     #141B2D  — Logo background
+ *   Warm Orange   #E8722A  — Primary brand color
+ *   Gold          #D4A843  — Secondary accent
+ *   Light Cream   #F5F0EB  — Light text on dark
+ *   Copper        #B47846  — Circuit trace accent
+ *
+ * shadcn/ui Stone palette used as the neutral base.
+ * Dark mode is the default (matches logo aesthetic).
+ *
+ * ============================================================
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* -- Terrible Turtle Brand Tokens -- */
+  --color-turtle-orange: oklch(0.65 0.19 35);
+  --color-turtle-gold: oklch(0.73 0.13 70);
+  --color-turtle-navy: oklch(0.20 0.04 260);
+  --color-turtle-cream: oklch(0.96 0.01 60);
+  --color-turtle-copper: oklch(0.56 0.10 50);
+}
+
+/*
+ * ──────────────────────────────────────────
+ *  LIGHT MODE
+ * ──────────────────────────────────────────
+ *  Clean and warm. Cream backgrounds with
+ *  navy text. Orange and gold accents pop
+ *  against the light canvas.
+ * ──────────────────────────────────────────
+ */
+:root {
+  --radius: 0.625rem;
+
+  /* Backgrounds & Surfaces */
+  --background: oklch(0.98 0.005 60);               /* Warm white (#FCF9F5) */
+  --foreground: oklch(0.18 0.04 260);                /* Dark navy (#141B2D) */
+  --card: oklch(0.97 0.005 60);                      /* Slightly off-white */
+  --card-foreground: oklch(0.18 0.04 260);
+  --popover: oklch(0.98 0.005 60);
+  --popover-foreground: oklch(0.18 0.04 260);
+
+  /* Primary — Warm Orange */
+  --primary: oklch(0.65 0.19 35);                    /* #E8722A */
+  --primary-foreground: oklch(0.98 0.005 60);        /* White on orange */
+
+  /* Secondary — Muted warm stone */
+  --secondary: oklch(0.93 0.01 60);                  /* Warm stone-100 */
+  --secondary-foreground: oklch(0.25 0.04 260);      /* Dark navy */
+
+  /* Muted — Subtle warm gray */
+  --muted: oklch(0.93 0.01 60);
+  --muted-foreground: oklch(0.55 0.02 50);           /* Warm mid-gray */
+
+  /* Accent — Gold */
+  --accent: oklch(0.73 0.13 70);                     /* #D4A843 */
+  --accent-foreground: oklch(0.18 0.04 260);         /* Dark navy on gold */
+
+  /* Destructive */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0.005 60);
+
+  /* Borders & Inputs */
+  --border: oklch(0.88 0.01 55);                     /* Warm stone border */
+  --input: oklch(0.88 0.01 55);
+  --ring: oklch(0.65 0.19 35);                       /* Orange focus ring */
+
+  /* Charts — gradient from orange through gold to copper */
+  --chart-1: oklch(0.65 0.19 35);                    /* Warm orange */
+  --chart-2: oklch(0.73 0.13 70);                    /* Gold */
+  --chart-3: oklch(0.56 0.10 50);                    /* Copper */
+  --chart-4: oklch(0.60 0.15 45);                    /* Burnt orange */
+  --chart-5: oklch(0.78 0.10 75);                    /* Light gold */
+
+  /* Sidebar */
+  --sidebar: oklch(0.96 0.007 60);
+  --sidebar-foreground: oklch(0.18 0.04 260);
+  --sidebar-primary: oklch(0.65 0.19 35);
+  --sidebar-primary-foreground: oklch(0.98 0.005 60);
+  --sidebar-accent: oklch(0.93 0.01 60);
+  --sidebar-accent-foreground: oklch(0.25 0.04 260);
+  --sidebar-border: oklch(0.88 0.01 55);
+  --sidebar-ring: oklch(0.65 0.19 35);
+}
+
+/*
+ * ──────────────────────────────────────────
+ *  DARK MODE (Recommended Default)
+ * ──────────────────────────────────────────
+ *  The true Terrible Turtle experience.
+ *  Deep navy backgrounds like the logo,
+ *  with glowing orange and gold accents
+ *  that evoke desert nights and circuit
+ *  board traces.
+ * ──────────────────────────────────────────
+ */
+.dark {
+  /* Backgrounds & Surfaces */
+  --background: oklch(0.14 0.03 260);                /* Deep navy (#0C1120) */
+  --foreground: oklch(0.96 0.01 60);                 /* Cream text (#F5F0EB) */
+  --card: oklch(0.18 0.035 260);                     /* Slightly lighter navy (#141B2D) */
+  --card-foreground: oklch(0.96 0.01 60);
+  --popover: oklch(0.18 0.035 260);
+  --popover-foreground: oklch(0.96 0.01 60);
+
+  /* Primary — Warm Orange (brighter for dark bg) */
+  --primary: oklch(0.70 0.19 35);                    /* Brighter orange on dark */
+  --primary-foreground: oklch(0.14 0.03 260);        /* Navy text on orange */
+
+  /* Secondary — Dark warm surface */
+  --secondary: oklch(0.22 0.03 255);                 /* Slightly lifted navy */
+  --secondary-foreground: oklch(0.96 0.01 60);
+
+  /* Muted — Subdued navy */
+  --muted: oklch(0.22 0.03 255);
+  --muted-foreground: oklch(0.60 0.02 55);           /* Warm mid-gray */
+
+  /* Accent — Gold (slightly brighter for dark bg) */
+  --accent: oklch(0.76 0.13 70);                     /* Brighter gold */
+  --accent-foreground: oklch(0.14 0.03 260);         /* Navy on gold */
+
+  /* Destructive */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.96 0.01 60);
+
+  /* Borders & Inputs */
+  --border: oklch(0.28 0.03 255);                    /* Subtle navy border */
+  --input: oklch(0.28 0.03 255);
+  --ring: oklch(0.70 0.19 35);                       /* Orange focus ring */
+
+  /* Charts — glowing warm palette on dark */
+  --chart-1: oklch(0.70 0.19 35);                    /* Bright orange */
+  --chart-2: oklch(0.76 0.13 70);                    /* Bright gold */
+  --chart-3: oklch(0.60 0.10 50);                    /* Warm copper */
+  --chart-4: oklch(0.65 0.15 45);                    /* Amber */
+  --chart-5: oklch(0.80 0.10 75);                    /* Pale gold */
+
+  /* Sidebar */
+  --sidebar: oklch(0.16 0.03 260);                   /* Between bg and card */
+  --sidebar-foreground: oklch(0.96 0.01 60);
+  --sidebar-primary: oklch(0.70 0.19 35);
+  --sidebar-primary-foreground: oklch(0.14 0.03 260);
+  --sidebar-accent: oklch(0.22 0.03 255);
+  --sidebar-accent-foreground: oklch(0.96 0.01 60);
+  --sidebar-border: oklch(0.28 0.03 255);
+  --sidebar-ring: oklch(0.70 0.19 35);
+}
+
+/*
+ * ──────────────────────────────────────────
+ *  BASE STYLES
+ * ──────────────────────────────────────────
+ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Smooth scrolling (complements Lenis) */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Selection highlight with brand orange */
+  ::selection {
+    background-color: oklch(0.65 0.19 35 / 0.3);
+    color: inherit;
+  }
+}
+
+/*
+ * ──────────────────────────────────────────
+ *  TURTLE BRAND UTILITIES
+ * ──────────────────────────────────────────
+ *  Extra utility classes for brand-specific
+ *  elements like gradient text, glowing
+ *  accents, and circuit-trace borders.
+ * ──────────────────────────────────────────
+ */
+@layer utilities {
+  /* Orange-to-gold gradient text (like the logo typography) */
+  .text-turtle-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.65 0.19 35) 0%,
+      oklch(0.73 0.13 70) 50%,
+      oklch(0.78 0.10 75) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Orange-to-gold background gradient */
+  .bg-turtle-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.65 0.19 35) 0%,
+      oklch(0.73 0.13 70) 100%
+    );
+  }
+
+  /* Subtle glow effect for cards and interactive elements */
+  .glow-orange {
+    box-shadow: 0 0 20px oklch(0.65 0.19 35 / 0.15),
+                0 0 60px oklch(0.65 0.19 35 / 0.05);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px oklch(0.73 0.13 70 / 0.15),
+                0 0 60px oklch(0.73 0.13 70 / 0.05);
+  }
+
+  /* Circuit-trace style border (dashed with brand color) */
+  .border-circuit {
+    border-style: dashed;
+    border-color: oklch(0.56 0.10 50 / 0.4);
+  }
+
+  /* Animated gradient border for featured elements */
+  .border-turtle-glow {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .border-turtle-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      oklch(0.65 0.19 35) 0%,
+      oklch(0.73 0.13 70) 50%,
+      oklch(0.56 0.10 50) 100%
+    );
+    z-index: -1;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    padding: 1px;
+  }
+}
