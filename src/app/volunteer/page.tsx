@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import StaggerReveal from "@/components/stagger-reveal";
 
 export default function VolunteerPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -102,19 +103,20 @@ export default function VolunteerPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-24">
       <div className="mx-auto w-full max-w-2xl rounded-2xl border border-turtle-copper/20 bg-card p-6 shadow-xl sm:p-10">
-        <div className="mb-8 text-center">
-          <h1 className="text-turtle-gradient text-3xl font-bold tracking-tight sm:text-4xl">
-            Volunteer With Us
-          </h1>
-          <p className="mt-2 text-turtle-cream/70">
-            Help us build something weird in the desert.
-          </p>
-        </div>
+        <StaggerReveal>
+          <div className="mb-8 text-center">
+            <h1 className="text-turtle-gradient text-3xl font-bold tracking-tight sm:text-4xl">
+              Volunteer With Us
+            </h1>
+            <p className="mt-2 text-turtle-cream/70">
+              Help us build something weird in the desert.
+            </p>
+          </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name */}
-            <FormField
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Name */}
+              <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -291,23 +293,24 @@ export default function VolunteerPage() {
               <p className="text-sm text-destructive">{serverError}</p>
             )}
 
-            <Button
-              type="submit"
-              size="lg"
-              disabled={isSubmitting}
-              className="h-12 w-full rounded-full bg-primary text-base font-semibold hover:glow-orange"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Join the Shell"
-              )}
-            </Button>
-          </form>
-        </Form>
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubmitting}
+                className="h-12 w-full rounded-full bg-primary text-base font-semibold hover:glow-orange"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Join the Shell"
+                )}
+              </Button>
+            </form>
+          </Form>
+        </StaggerReveal>
       </div>
     </main>
   );
