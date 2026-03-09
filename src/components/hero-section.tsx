@@ -140,7 +140,7 @@ export default function HeroSection() {
       >
         <Image
           src="/terrible-turtle.png"
-          alt="Terrible Turtle Labs logo"
+          alt="Terrible Turtle Camp logo"
           width={360}
           height={360}
           priority
@@ -154,7 +154,7 @@ export default function HeroSection() {
         className="absolute z-10 flex flex-col items-center gap-4 px-6 text-center opacity-0"
       >
         <h1 className="text-turtle-gradient text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-          Terrible Turtle Labs
+          Terrible Turtle Camp
         </h1>
         <p className="text-lg font-medium tracking-wide text-turtle-cream sm:text-xl md:text-2xl">
           Move Slow &amp; Bite Things

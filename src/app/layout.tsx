@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Terrible Turtle Labs — Move Slow & Bite Things",
+  title: "Terrible Turtle Camp — Move Slow & Bite Things",
   description:
     "An AI and art-centered Burning Man camp where technology meets radical creative expression.",
 };

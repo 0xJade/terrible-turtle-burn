@@ -15,11 +15,11 @@ import { Badge } from "@/components/ui/badge";
 
 const EVENTS = [
   {
-    title: "Pi Day Playa Meetup",
-    date: "March 14, 2026",
+    title: "Terrible Turtle Camp Meetup #0",
+    date: "March 21, 2026",
     description:
-      "Our first burn community meetup — pie, introductions, and camp planning. Come meet the turtles, share your skills, and help us dream up what we're building on the playa.",
-    href: "/events",
+      "Our first burn community meetup at The Gulch — introductions and camp planning. Come meet the turtles, share your skills, and help us dream up what we're building on the playa.",
+    href: "https://luma.com/ilq0senb",
     featured: true,
   },
   {
@@ -89,7 +89,7 @@ function EventCard({
 
   return (
     <motion.div style={{ y, willChange: "transform" }}>
-      <Link href={event.href} className="group block h-full">
+      <Link href={event.href} className="group block h-full" {...(event.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
         <Card className="h-full border-turtle-copper/20 transition-shadow duration-300 hover:glow-orange">
           <CardHeader>
             <div className="mb-2 flex items-center gap-2">
@@ -116,7 +116,7 @@ function EventCard({
           </CardContent>
           <CardFooter>
             <span className="text-sm font-medium text-turtle-orange transition-colors group-hover:text-turtle-gold">
-              Learn More &rarr;
+              {event.href.startsWith("http") ? "Register" : "Learn More"} &rarr;
             </span>
           </CardFooter>
         </Card>
