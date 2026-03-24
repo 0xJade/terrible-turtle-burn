@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import Link from "next/link";
 
 import {
   volunteerSchema,
   ROLE_OPTIONS,
+  EXPERIENCE_OPTIONS,
   AVAILABILITY_OPTIONS,
   type VolunteerFormData,
 } from "@/lib/schemas/volunteer";
@@ -34,19 +35,44 @@ import {
 } from "@/components/ui/select";
 import StaggerReveal from "@/components/stagger-reveal";
 
+interface Skill {
+  id: string;
+  name: string;
+  category: string | null;
+}
+
 export default function VolunteerPage() {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [showOtherSkill, setShowOtherSkill] = useState(false);
+  const [otherSkillInput, setOtherSkillInput] = useState("");
+  const [showOtherRole, setShowOtherRole] = useState(false);
+  const [otherRoleInput, setOtherRoleInput] = useState("");
+
+  useEffect(() => {
+    fetch("/api/skills")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: Skill[]) => {
+        const roleSet = new Set<string>(ROLE_OPTIONS);
+        setSkills(data.filter((s) => !roleSet.has(s.name)));
+      })
+      .catch(() => setSkills([]));
+  }, []);
 
   const form = useForm<VolunteerFormData>({
     resolver: zodResolver(volunteerSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       playaName: "",
-      roles: [],
-      skills: "",
       experience: "",
+      skills: [],
+      customSkills: [],
+      rolesInterested: [],
+      customRoles: [],
+      firstChoiceRole: "",
       availability: "",
       message: "",
     },
@@ -82,11 +108,10 @@ export default function VolunteerPage() {
       <main className="flex min-h-screen items-center justify-center px-4 py-24">
         <div className="mx-auto max-w-lg text-center">
           <h1 className="text-turtle-gradient text-4xl font-bold tracking-tight sm:text-5xl">
-            Welcome to the Shell
+            You&apos;re in the shell.
           </h1>
           <p className="mt-4 text-lg text-turtle-cream/80">
-            We got your sign-up. Keep an eye on your inbox — we&apos;ll be in
-            touch as plans come together.
+            We&apos;ll be in touch. 🐢
           </p>
           <Button
             asChild
@@ -115,183 +140,441 @@ export default function VolunteerPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Name */}
+              {/* First Name */}
               <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Email */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email *</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Playa Name */}
-            <FormField
-              control={form.control}
-              name="playaName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Playa Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your desert alter-ego" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    If you have one. If you don&apos;t, the playa will give you
-                    one.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Roles */}
-            <FormField
-              control={form.control}
-              name="roles"
-              render={() => (
-                <FormItem>
-                  <FormLabel>What can you help with? *</FormLabel>
-                  <FormDescription>Select all that apply.</FormDescription>
-                  <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
-                    {ROLE_OPTIONS.map((role) => (
-                      <FormField
-                        key={role}
-                        control={form.control}
-                        name="roles"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(role)}
-                                onCheckedChange={(checked) => {
-                                  const current = field.value ?? [];
-                                  field.onChange(
-                                    checked
-                                      ? [...current, role]
-                                      : current.filter((r) => r !== role)
-                                  );
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal">
-                              {role}
-                            </FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Skills */}
-            <FormField
-              control={form.control}
-              name="skills"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Skills / Superpowers</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Welding, Python, sourdough bread, emotional support..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Experience */}
-            <FormField
-              control={form.control}
-              name="experience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Burning Man Experience</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="First timer? Ten-year vet? Tell us about it."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Availability */}
-            <FormField
-              control={form.control}
-              name="availability"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Availability *</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name *</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="When can you be there?" />
-                      </SelectTrigger>
+                      <Input placeholder="First name" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {AVAILABILITY_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Last Name */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Playa Name */}
+              <FormField
+                control={form.control}
+                name="playaName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Playa Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your desert alter-ego" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      If you have one. If you don&apos;t, the playa will give you one.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Burning Man Experience */}
+              <FormField
+                control={form.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Burning Man Experience *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="How many burns?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {EXPERIENCE_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Skills & Superpowers */}
+              <FormField
+                control={form.control}
+                name="skills"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Skills &amp; Superpowers</FormLabel>
+                    <FormDescription>Select any that apply.</FormDescription>
+                    {skills.length > 0 && (
+                      <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
+                        {skills.map((skill) => (
+                          <FormField
+                            key={skill.id}
+                            control={form.control}
+                            name="skills"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center gap-2 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(skill.name)}
+                                    onCheckedChange={(checked) => {
+                                      const current = field.value ?? [];
+                                      field.onChange(
+                                        checked
+                                          ? [...current, skill.name]
+                                          : current.filter((s) => s !== skill.name)
+                                      );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-sm font-normal">
+                                  {skill.name}
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Other checkbox */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <Checkbox
+                        checked={showOtherSkill}
+                        onCheckedChange={(checked) => {
+                          setShowOtherSkill(!!checked);
+                          if (!checked) {
+                            setOtherSkillInput("");
+                          }
+                        }}
+                      />
+                      <span className="text-sm">Other</span>
+                    </div>
+
+                    {/* Add custom skills */}
+                    {showOtherSkill && (
+                      <FormField
+                        control={form.control}
+                        name="customSkills"
+                        render={({ field }) => {
+                          const customSkills = field.value ?? [];
+                          return (
+                            <div className="space-y-3 pt-1">
+                              {/* List of added custom skills */}
+                              {customSkills.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                  {customSkills.map((skill) => (
+                                    <span
+                                      key={skill}
+                                      className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-sm text-primary"
+                                    >
+                                      {skill}
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          field.onChange(customSkills.filter((s) => s !== skill))
+                                        }
+                                        className="ml-0.5 rounded-full p-0.5 hover:bg-primary/20"
+                                      >
+                                        <X className="size-3" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Input + Add button */}
+                              <div className="flex gap-2">
+                                <Input
+                                  placeholder="Type a skill and press Add"
+                                  value={otherSkillInput}
+                                  onChange={(e) => setOtherSkillInput(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.preventDefault();
+                                      const trimmed = otherSkillInput.trim();
+                                      if (trimmed && !customSkills.includes(trimmed)) {
+                                        field.onChange([...customSkills, trimmed]);
+                                        setOtherSkillInput("");
+                                      }
+                                    }
+                                  }}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="shrink-0"
+                                  onClick={() => {
+                                    const trimmed = otherSkillInput.trim();
+                                    if (trimmed && !customSkills.includes(trimmed)) {
+                                      field.onChange([...customSkills, trimmed]);
+                                      setOtherSkillInput("");
+                                    }
+                                  }}
+                                >
+                                  <Plus className="mr-1 size-4" />
+                                  Add
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Which roles interest you? */}
+              <FormField
+                control={form.control}
+                name="rolesInterested"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Which roles interest you?</FormLabel>
+                    <FormDescription>Select all that apply.</FormDescription>
+                    <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
+                      {ROLE_OPTIONS.map((role) => (
+                        <FormField
+                          key={role}
+                          control={form.control}
+                          name="rolesInterested"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(role)}
+                                  onCheckedChange={(checked) => {
+                                    const current = field.value ?? [];
+                                    field.onChange(
+                                      checked
+                                        ? [...current, role]
+                                        : current.filter((r) => r !== role)
+                                    );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                {role}
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
                       ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </div>
 
-            {/* Message */}
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Anything Else?</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Questions, ideas, bad puns about turtles..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    {/* Other checkbox */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <Checkbox
+                        checked={showOtherRole}
+                        onCheckedChange={(checked) => {
+                          setShowOtherRole(!!checked);
+                          if (!checked) {
+                            setOtherRoleInput("");
+                          }
+                        }}
+                      />
+                      <span className="text-sm">Other</span>
+                    </div>
 
-            {serverError && (
-              <p className="text-sm text-destructive">{serverError}</p>
-            )}
+                    {/* Add custom roles */}
+                    {showOtherRole && (
+                      <FormField
+                        control={form.control}
+                        name="customRoles"
+                        render={({ field }) => {
+                          const customRoles = field.value ?? [];
+                          return (
+                            <div className="space-y-3 pt-1">
+                              {customRoles.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                  {customRoles.map((role) => (
+                                    <span
+                                      key={role}
+                                      className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-sm text-primary"
+                                    >
+                                      {role}
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          field.onChange(customRoles.filter((r) => r !== role))
+                                        }
+                                        className="ml-0.5 rounded-full p-0.5 hover:bg-primary/20"
+                                      >
+                                        <X className="size-3" />
+                                      </button>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="flex gap-2">
+                                <Input
+                                  placeholder="Type a role and press Add"
+                                  value={otherRoleInput}
+                                  onChange={(e) => setOtherRoleInput(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.preventDefault();
+                                      const trimmed = otherRoleInput.trim();
+                                      if (trimmed && !customRoles.includes(trimmed)) {
+                                        field.onChange([...customRoles, trimmed]);
+                                        setOtherRoleInput("");
+                                      }
+                                    }
+                                  }}
+                                  className="flex-1"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="shrink-0"
+                                  onClick={() => {
+                                    const trimmed = otherRoleInput.trim();
+                                    if (trimmed && !customRoles.includes(trimmed)) {
+                                      field.onChange([...customRoles, trimmed]);
+                                      setOtherRoleInput("");
+                                    }
+                                  }}
+                                >
+                                  <Plus className="mr-1 size-4" />
+                                  Add
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* What is your first choice role? */}
+              <FormField
+                control={form.control}
+                name="firstChoiceRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What is your first choice role?</FormLabel>
+                    <FormDescription>
+                      If we need to place you in one role, where would you most want to contribute?
+                    </FormDescription>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Pick your top role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {ROLE_OPTIONS.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Availability */}
+              <FormField
+                control={form.control}
+                name="availability"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Availability</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="When can you be there?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {AVAILABILITY_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Anything Else */}
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Anything Else?</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Questions, ideas, bad puns about turtles..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Anything you want us to know about you, your skills, or your vision for camp.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {serverError && (
+                <p className="text-sm text-destructive">{serverError}</p>
+              )}
 
               <Button
                 type="submit"
