@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, X } from "lucide-react";
 import Link from "next/link";
+import SkillCombobox from "@/components/skill-combobox";
 
 import {
   volunteerSchema,
@@ -44,9 +45,7 @@ interface Skill {
 export default function VolunteerPage() {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [showOtherSkill, setShowOtherSkill] = useState(false);
-  const [otherSkillInput, setOtherSkillInput] = useState("");
+  const [skillOptions, setSkillOptions] = useState<Skill[]>([]);
   const [showOtherRole, setShowOtherRole] = useState(false);
   const [otherRoleInput, setOtherRoleInput] = useState("");
 
@@ -55,9 +54,9 @@ export default function VolunteerPage() {
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Skill[]) => {
         const roleSet = new Set<string>(ROLE_OPTIONS);
-        setSkills(data.filter((s) => !roleSet.has(s.name)));
+        setSkillOptions(data.filter((s) => !roleSet.has(s.name)));
       })
-      .catch(() => setSkills([]));
+      .catch(() => setSkillOptions([]));
   }, []);
 
   const form = useForm<VolunteerFormData>({
@@ -69,7 +68,6 @@ export default function VolunteerPage() {
       playaName: "",
       experience: "",
       skills: [],
-      customSkills: [],
       rolesInterested: [],
       customRoles: [],
       firstChoiceRole: "",
@@ -236,128 +234,19 @@ export default function VolunteerPage() {
               <FormField
                 control={form.control}
                 name="skills"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Skills &amp; Superpowers</FormLabel>
-                    <FormDescription>Select any that apply.</FormDescription>
-                    {skills.length > 0 && (
-                      <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
-                        {skills.map((skill) => (
-                          <FormField
-                            key={skill.id}
-                            control={form.control}
-                            name="skills"
-                            render={({ field }) => (
-                              <FormItem className="flex items-center gap-2 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(skill.name)}
-                                    onCheckedChange={(checked) => {
-                                      const current = field.value ?? [];
-                                      field.onChange(
-                                        checked
-                                          ? [...current, skill.name]
-                                          : current.filter((s) => s !== skill.name)
-                                      );
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="text-sm font-normal">
-                                  {skill.name}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Other checkbox */}
-                    <div className="flex items-center gap-2 pt-1">
-                      <Checkbox
-                        checked={showOtherSkill}
-                        onCheckedChange={(checked) => {
-                          setShowOtherSkill(!!checked);
-                          if (!checked) {
-                            setOtherSkillInput("");
-                          }
-                        }}
+                    <FormDescription>
+                      Search for skills or type your own.
+                    </FormDescription>
+                    <FormControl>
+                      <SkillCombobox
+                        skills={skillOptions}
+                        selected={field.value ?? []}
+                        onChange={field.onChange}
                       />
-                      <span className="text-sm">Other</span>
-                    </div>
-
-                    {/* Add custom skills */}
-                    {showOtherSkill && (
-                      <FormField
-                        control={form.control}
-                        name="customSkills"
-                        render={({ field }) => {
-                          const customSkills = field.value ?? [];
-                          return (
-                            <div className="space-y-3 pt-1">
-                              {/* List of added custom skills */}
-                              {customSkills.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                  {customSkills.map((skill) => (
-                                    <span
-                                      key={skill}
-                                      className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-sm text-primary"
-                                    >
-                                      {skill}
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          field.onChange(customSkills.filter((s) => s !== skill))
-                                        }
-                                        className="ml-0.5 rounded-full p-0.5 hover:bg-primary/20"
-                                      >
-                                        <X className="size-3" />
-                                      </button>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Input + Add button */}
-                              <div className="flex gap-2">
-                                <Input
-                                  placeholder="Type a skill and press Add"
-                                  value={otherSkillInput}
-                                  onChange={(e) => setOtherSkillInput(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                      e.preventDefault();
-                                      const trimmed = otherSkillInput.trim();
-                                      if (trimmed && !customSkills.includes(trimmed)) {
-                                        field.onChange([...customSkills, trimmed]);
-                                        setOtherSkillInput("");
-                                      }
-                                    }
-                                  }}
-                                  className="flex-1"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="shrink-0"
-                                  onClick={() => {
-                                    const trimmed = otherSkillInput.trim();
-                                    if (trimmed && !customSkills.includes(trimmed)) {
-                                      field.onChange([...customSkills, trimmed]);
-                                      setOtherSkillInput("");
-                                    }
-                                  }}
-                                >
-                                  <Plus className="mr-1 size-4" />
-                                  Add
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        }}
-                      />
-                    )}
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

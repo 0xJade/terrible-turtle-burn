@@ -62,10 +62,7 @@ export async function POST(request: NextRequest) {
     if (data.message) contactFields["Anything Else?"] = data.message;
 
     // Look up skill record IDs and create any custom skills
-    const allSelectedSkills = [
-      ...(data.skills ?? []),
-      ...(data.customSkills ?? []),
-    ];
+    const allSelectedSkills = data.skills ?? [];
 
     if (allSelectedSkills.length > 0) {
       const skillRecords = await listRecords("Skills", {

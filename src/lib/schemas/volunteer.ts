@@ -40,7 +40,6 @@ export const volunteerSchema = z.object({
   playaName: z.string().optional(),
   experience: z.string().min(1, "Please select your Burning Man experience"),
   skills: z.array(z.string()).optional(),
-  customSkills: z.array(z.string()).optional(),
   rolesInterested: z.array(z.string()).optional(),
   customRoles: z.array(z.string()).optional(),
   firstChoiceRole: z.string().optional(),
