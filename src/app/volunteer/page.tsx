@@ -73,6 +73,7 @@ export default function VolunteerPage() {
       firstChoiceRole: "",
       availability: "",
       message: "",
+      newsletter: false,
     },
   });
 
@@ -457,6 +458,28 @@ export default function VolunteerPage() {
                       Anything you want us to know about you, your skills, or your vision for camp.
                     </FormDescription>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Newsletter */}
+              <FormField
+                control={form.control}
+                name="newsletter"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-3 space-y-0 rounded-lg border border-border/40 p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Subscribe to our newsletter</FormLabel>
+                      <FormDescription>
+                        Get camp updates, build progress, and news delivered to your inbox.
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />

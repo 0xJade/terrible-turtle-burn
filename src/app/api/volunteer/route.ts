@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
     }
     if (data.availability) contactFields["Availability"] = data.availability;
     if (data.message) contactFields["Anything Else?"] = data.message;
+    if (data.newsletter) contactFields["Newsletter Subscription"] = true;
 
     // Look up skill record IDs and create any custom skills
     const allSelectedSkills = data.skills ?? [];

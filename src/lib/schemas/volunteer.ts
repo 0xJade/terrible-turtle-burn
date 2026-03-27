@@ -45,6 +45,7 @@ export const volunteerSchema = z.object({
   firstChoiceRole: z.string().optional(),
   availability: z.string().optional(),
   message: z.string().optional(),
+  newsletter: z.boolean().optional(),
 });
 
 export type VolunteerFormData = z.infer<typeof volunteerSchema>;
