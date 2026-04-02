@@ -15,28 +15,12 @@ import { Badge } from "@/components/ui/badge";
 
 const EVENTS = [
   {
-    title: "Terrible Turtle Camp Meetup #0",
-    date: "March 21, 2026",
+    title: "Terrible Turtle Camp #1",
+    date: "April 25, 2026",
     description:
-      "Our first burn community meetup at The Gulch — introductions and camp planning. Come meet the turtles, share your skills, and help us dream up what we're building on the playa.",
-    href: "https://luma.com/ilq0senb",
+      "Round two at The Gulch. Come connect with the crew, meet new turtles, and help shape what we're bringing to the playa this year.",
+    href: "/events",
     featured: true,
-  },
-  {
-    title: "Build Weekend #1",
-    date: "TBD — Spring 2026",
-    description:
-      "Hands-on weekend to prototype our interactive installations. Welders, coders, and dreamers welcome.",
-    href: "/events",
-    featured: false,
-  },
-  {
-    title: "AI Art Workshop",
-    date: "TBD — Summer 2026",
-    description:
-      "Explore generative art, real-time AI visuals, and creative coding. No experience needed — just curiosity.",
-    href: "/events",
-    featured: false,
   },
 ];
 
@@ -57,7 +41,7 @@ export default function EventsSection() {
           Upcoming Events
         </h2>
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="mx-auto grid max-w-md gap-8">
           {EVENTS.map((event, i) => (
             <EventCard
               key={event.title}
@@ -116,7 +100,7 @@ function EventCard({
           </CardContent>
           <CardFooter>
             <span className="text-sm font-medium text-turtle-orange transition-colors group-hover:text-turtle-gold">
-              {event.href.startsWith("http") ? "Register" : "Learn More"} &rarr;
+              {event.href.startsWith("http") ? "Register" : "Details Coming Soon"}
             </span>
           </CardFooter>
         </Card>
