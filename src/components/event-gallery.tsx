@@ -24,7 +24,11 @@ const SLIDES: Slide[] = [
 ];
 
 const AUTOPLAY_INTERVAL = 4000;
-const DRAG_THRESHOLD = 50;
+const AUTOPLAY_RESUME_DELAY = 3000;
+const DRAG_THRESHOLD = 30;
+const VELOCITY_THRESHOLD = 300;
+
+const SNAP_TRANSITION = { type: "spring" as const, stiffness: 400, damping: 35 };
 
 export default function EventGallery() {
   const [index, setIndex] = useState(0);
@@ -32,6 +36,7 @@ export default function EventGallery() {
   const controls = useAnimation();
   const x = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getSlideWidth = useCallback(() => {
     if (!containerRef.current) return 400;
@@ -46,12 +51,32 @@ export default function EventGallery() {
       const slideWidth = getSlideWidth();
       controls.start({
         x: -i * slideWidth,
-        transition: { type: "spring", stiffness: 300, damping: 30 },
+        transition: SNAP_TRANSITION,
       });
     },
     [controls, getSlideWidth]
   );
 
+  // Delayed autoplay resume after touch
+  const pauseWithDelay = useCallback(() => {
+    setPaused(true);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+  }, []);
+
+  const resumeWithDelay = useCallback(() => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      setPaused(false);
+    }, AUTOPLAY_RESUME_DELAY);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  // Autoplay
   useEffect(() => {
     if (paused) return;
     const interval = setInterval(() => {
@@ -60,19 +85,31 @@ export default function EventGallery() {
     return () => clearInterval(interval);
   }, [paused]);
 
+  // Snap when index changes
   useEffect(() => {
     snapTo(index);
   }, [index, snapTo]);
 
   function handleDragEnd(_: unknown, info: PanInfo) {
     const offset = info.offset.x;
-    if (offset < -DRAG_THRESHOLD && index < SLIDES.length - 1) {
+    const velocity = info.velocity.x;
+
+    // Use velocity for fast flicks, offset for slow drags
+    if (
+      (offset < -DRAG_THRESHOLD || velocity < -VELOCITY_THRESHOLD) &&
+      index < SLIDES.length - 1
+    ) {
       setIndex(index + 1);
-    } else if (offset > DRAG_THRESHOLD && index > 0) {
+    } else if (
+      (offset > DRAG_THRESHOLD || velocity > VELOCITY_THRESHOLD) &&
+      index > 0
+    ) {
       setIndex(index - 1);
     } else {
       snapTo(index);
     }
+
+    resumeWithDelay();
   }
 
   return (
@@ -89,18 +126,19 @@ export default function EventGallery() {
         <div
           ref={containerRef}
           className="overflow-hidden px-4 sm:px-0"
+          style={{ touchAction: "pan-y" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
-          onTouchStart={() => setPaused(true)}
-          onTouchEnd={() => setPaused(false)}
+          onTouchStart={pauseWithDelay}
+          onTouchEnd={resumeWithDelay}
         >
           <motion.div
             className="flex cursor-grab active:cursor-grabbing"
-            style={{ x }}
+            style={{ x, touchAction: "pan-y" }}
             animate={controls}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.1}
+            dragElastic={0.08}
             onDragEnd={handleDragEnd}
           >
             {SLIDES.map((slide, i) => (
@@ -114,6 +152,8 @@ export default function EventGallery() {
                     <img
                       src={slide.src}
                       alt={slide.alt}
+                      loading="lazy"
+                      decoding="async"
                       className={`aspect-[4/3] w-full object-cover ${slide.position}`}
                     />
                   ) : (
