@@ -42,6 +42,7 @@ export default function EventGallery() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [slideWidth, setSlideWidth] = useState(400);
+  const [isMobile, setIsMobile] = useState(false);
   const controls = useAnimation();
   const x = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +60,7 @@ export default function EventGallery() {
   useEffect(() => {
     function update() {
       setSlideWidth(calcSlideWidth());
+      setIsMobile(window.innerWidth < 1024);
     }
     update();
     window.addEventListener("resize", update);
@@ -93,14 +95,14 @@ export default function EventGallery() {
     };
   }, []);
 
-  // Autoplay
+  // Autoplay — only on mobile/tablet
   useEffect(() => {
-    if (paused) return;
+    if (paused || !isMobile) return;
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % SLIDES.length);
     }, AUTOPLAY_INTERVAL);
     return () => clearInterval(interval);
-  }, [paused]);
+  }, [paused, isMobile]);
 
   // Snap when index or slideWidth changes
   useEffect(() => {
