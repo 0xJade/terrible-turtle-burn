@@ -12,18 +12,26 @@ import {
 interface Slide {
   src: string;
   alt: string;
-  isGif?: boolean;
+  isVideo?: boolean;
+  poster?: string;
+  webm?: string;
   position: string;
 }
 
 const SLIDES: Slide[] = [
-  { src: "/events/camp-0/gulch_032126_6.gif", alt: "Terrible Turtle Camp #0 — fire performance", isGif: true, position: "object-center" },
+  {
+    src: "/events/camp-0/gulch_032126_6.mp4",
+    alt: "Terrible Turtle Camp #0 — fire performance",
+    isVideo: true,
+    poster: "/events/camp-0/gulch_032126_6_poster.jpg",
+    webm: "/events/camp-0/gulch_032126_6.webm",
+    position: "object-center",
+  },
   { src: "/events/camp-0/gulch_032126_1.jpg", alt: "Terrible Turtle Camp #0 — community gathering", position: "object-center" },
   { src: "/events/camp-0/gulch_032126_2.jpg", alt: "Terrible Turtle Camp #0 — meetup vibes", position: "object-[center_25%]" },
-  { src: "/events/camp-0/gulch_032126_3.jpg", alt: "Terrible Turtle Camp #0 — planning session", position: "object-center" },
 ];
 
-const AUTOPLAY_INTERVAL = 4000;
+const AUTOPLAY_INTERVAL = 5000;
 const AUTOPLAY_RESUME_DELAY = 3000;
 const DRAG_THRESHOLD = 30;
 const VELOCITY_THRESHOLD = 300;
@@ -33,31 +41,40 @@ const SNAP_TRANSITION = { type: "spring" as const, stiffness: 400, damping: 35 }
 export default function EventGallery() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [slideWidth, setSlideWidth] = useState(400);
   const controls = useAnimation();
   const x = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const getSlideWidth = useCallback(() => {
+  const calcSlideWidth = useCallback(() => {
     if (!containerRef.current) return 400;
-    const containerWidth = containerRef.current.offsetWidth;
-    if (containerWidth >= 1024) return containerWidth / 3;
-    if (containerWidth >= 640) return containerWidth / 2;
-    return containerWidth;
+    const w = containerRef.current.offsetWidth;
+    if (w >= 1024) return w / 3;
+    if (w >= 640) return w / 2;
+    return w;
   }, []);
+
+  // Recalculate on mount and resize
+  useEffect(() => {
+    function update() {
+      setSlideWidth(calcSlideWidth());
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [calcSlideWidth]);
 
   const snapTo = useCallback(
     (i: number) => {
-      const slideWidth = getSlideWidth();
       controls.start({
         x: -i * slideWidth,
         transition: SNAP_TRANSITION,
       });
     },
-    [controls, getSlideWidth]
+    [controls, slideWidth]
   );
 
-  // Delayed autoplay resume after touch
   const pauseWithDelay = useCallback(() => {
     setPaused(true);
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
@@ -85,7 +102,7 @@ export default function EventGallery() {
     return () => clearInterval(interval);
   }, [paused]);
 
-  // Snap when index changes
+  // Snap when index or slideWidth changes
   useEffect(() => {
     snapTo(index);
   }, [index, snapTo]);
@@ -94,7 +111,6 @@ export default function EventGallery() {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
-    // Use velocity for fast flicks, offset for slow drags
     if (
       (offset < -DRAG_THRESHOLD || velocity < -VELOCITY_THRESHOLD) &&
       index < SLIDES.length - 1
@@ -125,7 +141,7 @@ export default function EventGallery() {
         {/* Photo carousel */}
         <div
           ref={containerRef}
-          className="overflow-hidden px-4 sm:px-0"
+          className="overflow-x-hidden overflow-y-visible"
           style={{ touchAction: "pan-y" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
@@ -144,25 +160,28 @@ export default function EventGallery() {
             {SLIDES.map((slide, i) => (
               <div
                 key={slide.src}
-                className="w-[calc(100%-32px)] shrink-0 px-2 sm:w-1/2 lg:w-1/3"
+                className="w-full shrink-0 px-1 sm:w-1/2 sm:px-2 lg:w-1/3"
               >
                 <div className="overflow-hidden rounded-xl border border-turtle-copper/20 shadow-lg">
-                  {slide.isGif ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={slide.src}
-                      alt={slide.alt}
-                      loading="lazy"
-                      decoding="async"
+                  {slide.isVideo ? (
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      poster={slide.poster}
                       className={`aspect-[4/3] w-full object-cover ${slide.position}`}
-                    />
+                    >
+                      <source src={slide.webm} type="video/webm" />
+                      <source src={slide.src} type="video/mp4" />
+                    </video>
                   ) : (
                     <Image
                       src={slide.src}
                       alt={slide.alt}
                       width={600}
                       height={450}
-                      sizes="(max-width: 640px) calc(100vw - 64px), (max-width: 1024px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority={i <= 2}
                       className={`aspect-[4/3] w-full object-cover ${slide.position}`}
                     />
