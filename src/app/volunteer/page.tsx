@@ -12,6 +12,7 @@ import {
   ROLE_OPTIONS,
   EXPERIENCE_OPTIONS,
   AVAILABILITY_OPTIONS,
+  HOW_DID_YOU_HEAR_OPTIONS,
   type VolunteerFormData,
 } from "@/lib/schemas/volunteer";
 import {
@@ -72,6 +73,11 @@ export default function VolunteerPage() {
       customRoles: [],
       firstChoiceRole: "",
       availability: "",
+      joiningWithGroup: false,
+      groupName: "",
+      groupRole: "",
+      groupSize: undefined,
+      howDidYouHear: "",
       message: "",
       newsletter: false,
     },
@@ -430,6 +436,116 @@ export default function VolunteerPage() {
                       </FormControl>
                       <SelectContent>
                         {AVAILABILITY_OPTIONS.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Are you joining with a group? */}
+              <FormField
+                control={form.control}
+                name="joiningWithGroup"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-3 space-y-0 rounded-lg border border-border/40 p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value ?? false}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Are you joining with a group?</FormLabel>
+                      <FormDescription>
+                        Check this if you&apos;re coming with a crew or project.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {/* Conditional group fields */}
+              {form.watch("joiningWithGroup") && (
+                <>
+                  {/* Group or project name */}
+                  <FormField
+                    control={form.control}
+                    name="groupName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Group or project name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your group or project name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Your role within the group */}
+                  <FormField
+                    control={form.control}
+                    name="groupRole"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Your role within the group</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Lead builder, DJ, organizer" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Approximate group size */}
+                  <FormField
+                    control={form.control}
+                    name="groupSize"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Approximate group size coming with you</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            placeholder="e.g. 5"
+                            value={field.value ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              field.onChange(val === "" ? undefined : parseInt(val, 10));
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
+              {/* How did you hear about Terrible Turtle? */}
+              <FormField
+                control={form.control}
+                name="howDidYouHear"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>How did you hear about Terrible Turtle?</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select one" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {HOW_DID_YOU_HEAR_OPTIONS.map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}
                           </SelectItem>

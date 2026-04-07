@@ -33,6 +33,13 @@ export const AVAILABILITY_OPTIONS = [
   "Not Sure Yet",
 ] as const;
 
+export const HOW_DID_YOU_HEAR_OPTIONS = [
+  "Participation Fair",
+  "Word of mouth",
+  "Social media",
+  "Other",
+] as const;
+
 export const volunteerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -44,6 +51,11 @@ export const volunteerSchema = z.object({
   customRoles: z.array(z.string()).optional(),
   firstChoiceRole: z.string().optional(),
   availability: z.string().optional(),
+  joiningWithGroup: z.boolean().optional(),
+  groupName: z.string().optional(),
+  groupRole: z.string().optional(),
+  groupSize: z.number().int().positive().optional(),
+  howDidYouHear: z.string().optional(),
   message: z.string().optional(),
   newsletter: z.boolean().optional(),
 });
