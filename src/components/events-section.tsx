@@ -19,7 +19,7 @@ const EVENTS = [
     date: "April 25, 2026",
     description:
       "Round two at The Gulch. Come connect with the crew, meet new turtles, and help shape what we're bringing to the playa this year.",
-    href: "/events",
+    href: "https://luma.com/k3wvr7x2",
     featured: true,
   },
 ];
