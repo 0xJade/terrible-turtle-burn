@@ -15,11 +15,11 @@ import { Badge } from "@/components/ui/badge";
 
 const EVENTS = [
   {
-    title: "Terrible Turtle Camp #1",
-    date: "April 25, 2026",
+    title: "Terrible Turtle Camp #2",
+    date: "May 30, 2026",
     description:
-      "Round two at The Gulch. Come connect with the crew, meet new turtles, and help shape what we're bringing to the playa this year.",
-    href: "https://luma.com/k3wvr7x2",
+      "Round three at The Gulch. Come connect with the crew, meet new turtles, and help shape what we're bringing to the playa this year. We'll also be hosting our first voice activation offering.",
+    href: "https://luma.com/sixqdbtn",
     featured: true,
   },
 ];
@@ -99,8 +99,8 @@ function EventCard({
             </p>
           </CardContent>
           <CardFooter>
-            <span className="text-sm font-medium text-turtle-orange transition-colors group-hover:text-turtle-gold">
-              {event.href.startsWith("http") ? "Register" : "Details Coming Soon"}
+            <span className="inline-flex h-11 w-full items-center justify-center rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground transition-all duration-200 group-hover:glow-orange group-hover:brightness-110">
+              {event.href.startsWith("http") ? "Register Now" : "Details Coming Soon"}
             </span>
           </CardFooter>
         </Card>
