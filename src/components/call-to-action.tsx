@@ -24,20 +24,13 @@ export default function CallToAction() {
             there&apos;s a spot in the shell for you.
           </p>
 
-          <div className="flex flex-col items-center gap-4 pt-4 sm:flex-row">
+          <div className="pt-4">
             <Button
               asChild
               size="lg"
-              className="h-12 rounded-full bg-turtle-navy px-8 text-base font-semibold text-turtle-cream hover:bg-turtle-navy/90"
+              className="h-14 rounded-full bg-turtle-navy px-12 text-lg font-semibold text-turtle-cream hover:bg-turtle-navy/90"
             >
               <Link href="/application">Join the Camp</Link>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              className="text-turtle-navy/70 hover:text-turtle-navy"
-            >
-              <Link href="/about">Learn more about the camp &rarr;</Link>
             </Button>
           </div>
         </motion.div>
