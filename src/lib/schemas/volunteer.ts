@@ -67,11 +67,11 @@ export const volunteerSchema = z
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
-    phone: z.string().optional(),
-    pronouns: z.string().optional(),
+    phone: z.string().min(1, "Phone number is required"),
+    pronouns: z.string().min(1, "Pronouns are required"),
     playaName: z.string().optional(),
-    cityStateCountry: z.string().optional(),
-    mailingAddress: z.string().optional(),
+    cityStateCountry: z.string().min(1, "City, state, and country are required"),
+    mailingAddress: z.string().min(1, "Mailing address is required"),
 
     // ── About Your Burn ──
     volunteering: z.string().min(1, "Please let us know if you're volunteering"),
@@ -93,7 +93,7 @@ export const volunteerSchema = z
     crewMemberNames: z.string().optional(),
 
     // ── Intentions & Gifts ──
-    intentions: z.string().optional(),
+    intentions: z.string().min(1, "Please share your intentions for this burn"),
     contribution: z.string().optional(),
     mostRecentCamp: z.string().optional(),
     howDidYouHear: z.string().optional(),

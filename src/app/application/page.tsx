@@ -234,7 +234,7 @@ export default function ApplicationPage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Phone *</FormLabel>
                         <FormControl>
                           <Input
                             type="tel"
@@ -253,7 +253,7 @@ export default function ApplicationPage() {
                       name="pronouns"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pronouns</FormLabel>
+                          <FormLabel>Pronouns *</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             value={field.value}
@@ -302,7 +302,7 @@ export default function ApplicationPage() {
                     name="cityStateCountry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City, State, Country</FormLabel>
+                        <FormLabel>City, State, Country *</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="San Francisco, CA, USA"
@@ -319,7 +319,7 @@ export default function ApplicationPage() {
                     name="mailingAddress"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mailing Address</FormLabel>
+                        <FormLabel>Mailing Address *</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Street address, city, state, zip"
@@ -327,9 +327,6 @@ export default function ApplicationPage() {
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Optional — only needed if we send physical camp materials.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -707,7 +704,7 @@ export default function ApplicationPage() {
                     name="intentions"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>What are your intentions for this burn?</FormLabel>
+                        <FormLabel>What are your intentions for this burn? *</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="What do you hope to experience, create, or give?"
@@ -821,9 +818,6 @@ export default function ApplicationPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Will you be under 18 during burn week? *</FormLabel>
-                        <FormDescription>
-                          Burn week is typically late August 2026. Minors require additional coordination.
-                        </FormDescription>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
