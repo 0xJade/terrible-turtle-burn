@@ -31,7 +31,7 @@ const clipReveal: RouteTransition = {
 };
 
 const routeTransitions: Record<string, RouteTransition> = {
-  "/volunteer": clipReveal,
+  "/application": clipReveal,
 };
 
 export default function Template({ children }: { children: React.ReactNode }) {

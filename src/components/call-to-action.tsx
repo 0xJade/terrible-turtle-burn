@@ -30,7 +30,7 @@ export default function CallToAction() {
               size="lg"
               className="h-12 rounded-full bg-turtle-navy px-8 text-base font-semibold text-turtle-cream hover:bg-turtle-navy/90"
             >
-              <Link href="/volunteer">Volunteer With Us</Link>
+              <Link href="/application">Join the Camp</Link>
             </Button>
             <Button
               asChild

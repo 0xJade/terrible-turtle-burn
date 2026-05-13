@@ -1,20 +1,25 @@
 import { z } from "zod";
 
+export const VOLUNTEERING_OPTIONS = [
+  "Yes",
+  "No",
+] as const;
+
 export const ROLE_OPTIONS = [
-  "Build / Fabrication",
-  "Tech / Electronics",
-  "Music / Sound",
-  "First Aid / Safety",
-  "Art / Design",
-  "Kitchen / Food",
-  "Logistics / Planning",
-  "Greeter / Vibes",
-  "Power & Infrastructure",
+  "Greeter/Vibes",
+  "Tech/Electronics",
+  "Kitchen/Food",
   "Community Care",
-  "Media & Documentation",
+  "Build/Fabrication",
   "Programming & Workshops",
-  "Camp Experience / Décor",
+  "Music/Sound",
+  "Logistics/Planning",
+  "First Aid/Safety",
   "Leave No Trace & Strike",
+  "Art/Design",
+  "Power & Infrastructure",
+  "Media & Documentation",
+  "Camp Experience/Décor",
 ] as const;
 
 export const EXPERIENCE_OPTIONS = [
@@ -25,12 +30,28 @@ export const EXPERIENCE_OPTIONS = [
 ] as const;
 
 export const AVAILABILITY_OPTIONS = [
+  "Build Week",
   "Full Burn (arriving early, staying late)",
-  "Most of the Week",
-  "A Few Days",
-  "Build Week Only",
-  "Strike Only",
+  "Event Week",
+  "Breakdown/Strike",
   "Not Sure Yet",
+] as const;
+
+export const SKILLS_OPTIONS = [
+  "Workshop/Panel Facilitation",
+  "Data & Analytics",
+  "Construction",
+  "Emotional Holding & Active Listening",
+  "Software Development",
+  "Machine Learning/AI",
+  "Hardware & Electrical Engineering",
+] as const;
+
+export const PRONOUNS_OPTIONS = [
+  "she/her",
+  "he/him",
+  "they/them",
+  "other",
 ] as const;
 
 export const HOW_DID_YOU_HEAR_OPTIONS = [
@@ -40,24 +61,84 @@ export const HOW_DID_YOU_HEAR_OPTIONS = [
   "Other",
 ] as const;
 
-export const volunteerSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email"),
-  playaName: z.string().optional(),
-  experience: z.string().min(1, "Please select your Burning Man experience"),
-  skills: z.array(z.string()).optional(),
-  rolesInterested: z.array(z.string()).optional(),
-  customRoles: z.array(z.string()).optional(),
-  firstChoiceRole: z.string().optional(),
-  availability: z.string().optional(),
-  joiningWithGroup: z.boolean().optional(),
-  groupName: z.string().optional(),
-  groupRole: z.string().optional(),
-  groupSize: z.number().int().positive().optional(),
-  howDidYouHear: z.string().optional(),
-  message: z.string().optional(),
-  newsletter: z.boolean().optional(),
-});
+export const volunteerSchema = z
+  .object({
+    // ── Personal Info (Contact) ──
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Please enter a valid email"),
+    phone: z.string().optional(),
+    pronouns: z.string().optional(),
+    playaName: z.string().optional(),
+    cityStateCountry: z.string().optional(),
+    mailingAddress: z.string().optional(),
+
+    // ── About Your Burn ──
+    volunteering: z.string().min(1, "Please let us know if you're volunteering"),
+    experience: z.string().min(1, "Please select your Burning Man experience"),
+
+    // ── Roles & Skills (conditional: required if volunteering = "Yes") ──
+    rolesInterested: z.array(z.string()).optional(),
+    firstChoiceRole: z.string().optional(),
+    skills: z.array(z.string()).optional(),
+
+    // ── Availability (conditional: required if volunteering = "Yes") ──
+    availability: z.string().optional(),
+
+    // ── Group ──
+    joiningWithGroup: z.boolean().optional(),
+    groupName: z.string().optional(),
+    groupRole: z.string().optional(),
+    groupSize: z.number().int().positive().optional(),
+    crewMemberNames: z.string().optional(),
+
+    // ── Intentions & Gifts ──
+    intentions: z.string().optional(),
+    contribution: z.string().optional(),
+    mostRecentCamp: z.string().optional(),
+    howDidYouHear: z.string().optional(),
+
+    // ── Final Details ──
+    anythingElse: z.string().optional(),
+    under18: z.string().min(1, "Please indicate if you'll be under 18 during burn week"),
+    newsletter: z.boolean().optional(),
+    consent: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the data collection consent to submit",
+    }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.volunteering === "Yes") {
+      if (!data.rolesInterested || data.rolesInterested.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select at least one role",
+          path: ["rolesInterested"],
+        });
+      }
+      if (!data.firstChoiceRole || data.firstChoiceRole.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select your first choice role",
+          path: ["firstChoiceRole"],
+        });
+      }
+      if (!data.availability || data.availability.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Please select your availability",
+          path: ["availability"],
+        });
+      }
+    }
+    if (data.joiningWithGroup) {
+      if (!data.groupName || data.groupName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Group or project name is required",
+          path: ["groupName"],
+        });
+      }
+    }
+  });
 
 export type VolunteerFormData = z.infer<typeof volunteerSchema>;
