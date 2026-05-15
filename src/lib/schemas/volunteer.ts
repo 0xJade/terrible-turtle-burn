@@ -1,144 +1,60 @@
 import { z } from "zod";
 
-export const VOLUNTEERING_OPTIONS = [
-  "Yes",
-  "No",
+export const COUNTRY_CODES = [
+  { label: "United States (+1)", code: "+1" },
+  { label: "Canada (+1)", code: "+1" },
+  { label: "United Kingdom (+44)", code: "+44" },
+  { label: "Australia (+61)", code: "+61" },
+  { label: "New Zealand (+64)", code: "+64" },
+  { label: "Ireland (+353)", code: "+353" },
+  { label: "South Africa (+27)", code: "+27" },
+  { label: "Austria (+43)", code: "+43" },
+  { label: "Belgium (+32)", code: "+32" },
+  { label: "Brazil (+55)", code: "+55" },
+  { label: "Chile (+56)", code: "+56" },
+  { label: "China (+86)", code: "+86" },
+  { label: "Colombia (+57)", code: "+57" },
+  { label: "Czech Republic (+420)", code: "+420" },
+  { label: "Denmark (+45)", code: "+45" },
+  { label: "Egypt (+20)", code: "+20" },
+  { label: "Finland (+358)", code: "+358" },
+  { label: "France (+33)", code: "+33" },
+  { label: "Germany (+49)", code: "+49" },
+  { label: "Greece (+30)", code: "+30" },
+  { label: "India (+91)", code: "+91" },
+  { label: "Indonesia (+62)", code: "+62" },
+  { label: "Israel (+972)", code: "+972" },
+  { label: "Italy (+39)", code: "+39" },
+  { label: "Japan (+81)", code: "+81" },
+  { label: "Kenya (+254)", code: "+254" },
+  { label: "Malaysia (+60)", code: "+60" },
+  { label: "Mexico (+52)", code: "+52" },
+  { label: "Netherlands (+31)", code: "+31" },
+  { label: "Nigeria (+234)", code: "+234" },
+  { label: "Norway (+47)", code: "+47" },
+  { label: "Peru (+51)", code: "+51" },
+  { label: "Philippines (+63)", code: "+63" },
+  { label: "Poland (+48)", code: "+48" },
+  { label: "Portugal (+351)", code: "+351" },
+  { label: "Singapore (+65)", code: "+65" },
+  { label: "South Korea (+82)", code: "+82" },
+  { label: "Spain (+34)", code: "+34" },
+  { label: "Sweden (+46)", code: "+46" },
+  { label: "Switzerland (+41)", code: "+41" },
+  { label: "Thailand (+66)", code: "+66" },
+  { label: "United Arab Emirates (+971)", code: "+971" },
+  { label: "Argentina (+54)", code: "+54" },
 ] as const;
 
-export const ROLE_OPTIONS = [
-  "Greeter/Vibes",
-  "Tech/Electronics",
-  "Kitchen/Food",
-  "Community Care",
-  "Build/Fabrication",
-  "Programming & Workshops",
-  "Music/Sound",
-  "Logistics/Planning",
-  "First Aid/Safety",
-  "Leave No Trace & Strike",
-  "Art/Design",
-  "Power & Infrastructure",
-  "Media & Documentation",
-  "Camp Experience/Décor",
-] as const;
-
-export const EXPERIENCE_OPTIONS = [
-  "Virgin (never attended)",
-  "Once or Twice",
-  "Seasoned Burner (3–5x)",
-  "Veteran (6x+)",
-] as const;
-
-export const AVAILABILITY_OPTIONS = [
-  "Build Week",
-  "Full Burn (arriving early, staying late)",
-  "Event Week",
-  "Breakdown/Strike",
-  "Not Sure Yet",
-] as const;
-
-export const SKILLS_OPTIONS = [
-  "Workshop/Panel Facilitation",
-  "Data & Analytics",
-  "Construction",
-  "Emotional Holding & Active Listening",
-  "Software Development",
-  "Machine Learning/AI",
-  "Hardware & Electrical Engineering",
-] as const;
-
-export const PRONOUNS_OPTIONS = [
-  "she/her",
-  "he/him",
-  "they/them",
-  "other",
-] as const;
-
-export const HOW_DID_YOU_HEAR_OPTIONS = [
-  "Participation Fair",
-  "Word of mouth",
-  "Social media",
-  "Other",
-] as const;
-
-export const volunteerSchema = z
-  .object({
-    // ── Personal Info (Contact) ──
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().email("Please enter a valid email"),
-    phone: z.string().min(1, "Phone number is required"),
-    pronouns: z.string().min(1, "Pronouns are required"),
-    playaName: z.string().optional(),
-    cityStateCountry: z.string().min(1, "City, state, and country are required"),
-    mailingAddress: z.string().min(1, "Mailing address is required"),
-
-    // ── About Your Burn ──
-    volunteering: z.string().min(1, "Please let us know if you're volunteering"),
-    experience: z.string().min(1, "Please select your Burning Man experience"),
-
-    // ── Roles & Skills (conditional: required if volunteering = "Yes") ──
-    rolesInterested: z.array(z.string()).optional(),
-    firstChoiceRole: z.string().optional(),
-    skills: z.array(z.string()).optional(),
-
-    // ── Availability (conditional: required if volunteering = "Yes") ──
-    availability: z.string().optional(),
-
-    // ── Group ──
-    joiningWithGroup: z.boolean().optional(),
-    groupName: z.string().optional(),
-    groupRole: z.string().optional(),
-    groupSize: z.number().int().positive().optional(),
-    crewMemberNames: z.string().optional(),
-
-    // ── Intentions & Gifts ──
-    intentions: z.string().min(1, "Please share your intentions for this burn"),
-    contribution: z.string().optional(),
-    mostRecentCamp: z.string().optional(),
-    howDidYouHear: z.string().optional(),
-
-    // ── Final Details ──
-    anythingElse: z.string().optional(),
-    under18: z.string().min(1, "Please indicate if you'll be under 18 during burn week"),
-    newsletter: z.boolean().optional(),
-    consent: z.boolean().refine((val) => val === true, {
-      message: "You must agree to the data collection consent to submit",
-    }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.volunteering === "Yes") {
-      if (!data.rolesInterested || data.rolesInterested.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Please select at least one role",
-          path: ["rolesInterested"],
-        });
-      }
-      if (!data.firstChoiceRole || data.firstChoiceRole.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Please select your first choice role",
-          path: ["firstChoiceRole"],
-        });
-      }
-      if (!data.availability || data.availability.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Please select your availability",
-          path: ["availability"],
-        });
-      }
-    }
-    if (data.joiningWithGroup) {
-      if (!data.groupName || data.groupName.trim() === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Group or project name is required",
-          path: ["groupName"],
-        });
-      }
-    }
-  });
+export const volunteerSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Please enter a valid email"),
+  phoneCountryCode: z.string().min(1, "Please select a country code"),
+  phone: z.string().min(1, "Phone number is required"),
+  consent: z.boolean().refine((val) => val === true, {
+    message: "Please acknowledge the application consent to submit",
+  }),
+});
 
 export type VolunteerFormData = z.infer<typeof volunteerSchema>;
