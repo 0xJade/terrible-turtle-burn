@@ -52,6 +52,7 @@ export const volunteerSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phoneCountryCode: z.string().min(1, "Please select a country code"),
   phone: z.string().min(1, "Phone number is required"),
+  association: z.string().min(1, "Please enter an association or N/A"),
   consent: z.boolean().refine((val) => val === true, {
     message: "Please acknowledge the application consent to submit",
   }),

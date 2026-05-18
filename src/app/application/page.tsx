@@ -43,6 +43,7 @@ export default function ApplicationPage() {
       email: "",
       phoneCountryCode: "United States (+1)",
       phone: "",
+      association: "",
       consent: false,
     },
   });
@@ -215,6 +216,23 @@ export default function ApplicationPage() {
                       />
                     </div>
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="association"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Group, Person, or Project Association * <span className="font-normal text-turtle-cream/50">(if none, put N/A)</span></FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Who referred you or what group are you with?"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}

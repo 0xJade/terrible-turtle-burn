@@ -22,6 +22,7 @@ const CF = {
 
 const AF = {
   contact: "fldklcVsX2r83at6z",
+  groupOrProjectName: "fldtNpDT3mNRHHOpX",
   year: "fldoeHNmXV72Ebyih",
   status: "fldsQkbGCE8WSY3q5",
   dateSubmitted: "fldwf7xYDRMHq0CDp",
@@ -84,12 +85,15 @@ export async function POST(request: NextRequest) {
 
     // ── Step 2: Create Application ──
 
-    await createRecord(APPLICATIONS_TABLE, {
+    const appFields: Record<string, unknown> = {
       [AF.contact]: [contactRecordId],
       [AF.year]: "2026",
       [AF.status]: "Interested",
       [AF.dateSubmitted]: today,
-    });
+    };
+    appFields[AF.groupOrProjectName] = data.association;
+
+    await createRecord(APPLICATIONS_TABLE, appFields);
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {
