@@ -206,6 +206,12 @@
  *  BASE STYLES
  * ──────────────────────────────────────────
  */
+@keyframes trace-down {
+  0%   { transform: translateY(-100%); opacity: 1; }
+  75%  { opacity: 1; }
+  100% { transform: translateY(300%); opacity: 0; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -275,6 +281,12 @@
   .border-circuit {
     border-style: dashed;
     border-color: oklch(0.56 0.10 50 / 0.4);
+  }
+
+  /* Scroll indicator — circuit trace dot sliding down a vertical line */
+  .animate-trace-down {
+    animation: trace-down 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation-delay: 0.4s;
   }
 
   /* Animated gradient border for featured elements */

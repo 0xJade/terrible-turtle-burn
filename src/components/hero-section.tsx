@@ -12,13 +12,15 @@ export default function HeroSection() {
   const logoRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     const logo = logoRef.current;
     const text = textRef.current;
     const particles = particlesRef.current;
-    if (!section || !logo || !text || !particles) return;
+    const scrollHint = scrollHintRef.current;
+    if (!section || !logo || !text || !particles || !scrollHint) return;
 
     // Generate particle elements
     const particleCount = window.innerWidth < 768 ? 40 : 80;
@@ -43,6 +45,11 @@ export default function HeroSection() {
 
     const dots = particles.children;
 
+    // Fade the scroll hint in after the logo has had time to render
+    const hintTimeout = setTimeout(() => {
+      gsap.to(scrollHint, { opacity: 1, duration: 0.8, ease: "power2.out" });
+    }, 1200);
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -53,6 +60,9 @@ export default function HeroSection() {
         anticipatePin: 1,
       },
     });
+
+    // Dismiss the scroll hint the moment scrolling begins
+    tl.to(scrollHint, { opacity: 0, duration: 0.15, ease: "power1.out" }, 0);
 
     // Phase 1: Logo dissolves — scale up, fade out, particles scatter
     tl.to(
@@ -112,6 +122,7 @@ export default function HeroSection() {
     );
 
     return () => {
+      clearTimeout(hintTimeout);
       tl.kill();
       ScrollTrigger.getAll().forEach((st) => {
         if (st.trigger === section) st.kill();
@@ -159,6 +170,20 @@ export default function HeroSection() {
         <p className="text-lg font-medium tracking-wide text-turtle-cream sm:text-xl md:text-2xl">
           Move Slow &amp; Bite Things
         </p>
+      </div>
+
+      {/* Scroll indicator — circuit trace */}
+      <div
+        ref={scrollHintRef}
+        className="pointer-events-none absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 opacity-0"
+        aria-hidden="true"
+      >
+        <span className="text-[10px] uppercase tracking-[0.35em] text-turtle-copper">
+          scroll
+        </span>
+        <div className="relative h-10 w-px overflow-hidden bg-turtle-copper/25">
+          <div className="animate-trace-down absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-turtle-orange to-transparent" />
+        </div>
       </div>
     </section>
   );
